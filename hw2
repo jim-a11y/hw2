@@ -1,0 +1,52 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# 創建有向圖
+G = nx.DiGraph()
+
+# 添加任務和持續時間
+tasks = {
+    1: (1, "研擬計劃"),
+    2: (4, "任務分配"),
+    3: (17, "取得硬體"),
+    4: (70, "程式開發"),
+    5: (10, "安裝硬體"),
+    6: (30, "程式測試"),
+    7: (25, "撰寫使用手冊"),
+    8: (20, "轉換檔案"),
+    9: (25, "系統測試"),
+    10: (20, "使用者訓練"),
+    11: (25, "使用者測試"),
+}
+
+# 添加邊（前置任務關係）
+dependencies = [
+    (1, 2),  # 研擬計劃 -> 任務分配
+    (1, 3),  # 研擬計劃 -> 取得硬體
+    (2, 4),  # 任務分配 -> 程式開發
+    (3, 5),  # 取得硬體 -> 安裝硬體
+    (4, 6),  # 程式開發 -> 程式測試
+    (5, 7),  # 安裝硬體 -> 撰寫使用手冊
+    (5, 8),  # 安裝硬體 -> 轉換檔案
+    (6, 9),  # 程式測試 -> 系統測試
+    (7, 10), # 撰寫使用手冊 -> 使用者訓練
+    (8, 10), # 轉換檔案 -> 使用者訓練
+    (9, 11), # 系統測試 -> 使用者測試
+    (10, 11) # 使用者訓練 -> 使用者測試
+]
+
+# 將任務和依賴關係添加到圖中
+for task_id, (duration, name) in tasks.items():
+    G.add_node(task_id, duration=duration, name=name)
+
+for pre, post in dependencies:
+    G.add_edge(pre, post)
+
+# 繪製圖形
+pos = nx.spring_layout(G)  # 使用 spring layout
+node_labels = {node: f"{data['name']} ({data['duration']}天)" for node, data in G.nodes(data=True)}
+
+plt.figure(figsize=(12, 8))
+nx.draw(G, pos, with_labels=True, labels=node_labels, node_size=3000, node_color='lightblue', font_size=10, font_weight='bold', arrows=True)
+plt.title("PERT/CPM 圖")
+plt.show()
